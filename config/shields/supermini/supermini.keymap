@@ -1,14 +1,11 @@
 / {
-    #define COPY  LC(C)
-    #define PASTE LC(V)
-
     keymap {
         compatible = "zmk,keymap";
 
         default_layer {
             bindings = <
-                &kp COPY
-                &kp PASTE
+                &kp LC(C)     // Copy
+                &kp LC(V)     // Paste
             >;
         };
     };

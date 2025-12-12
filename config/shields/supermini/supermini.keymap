@@ -4,8 +4,8 @@
 
         default_layer {
             bindings = <
-                &kp LC(C)
-                &kp LC(V)
+                &kp LC(C)    // Command + C
+                &kp LC(V)    // Command + V
             >;
         };
     };

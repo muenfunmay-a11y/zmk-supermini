@@ -1,11 +1,14 @@
 / {
+    #define COPY  LC(C)   /* Command + C */
+    #define PASTE LC(V)   /* Command + V */
+
     keymap {
         compatible = "zmk,keymap";
 
         default_layer {
             bindings = <
-                &kp LC(C)   // Copy (Command + C)
-                &kp LC(V)   // Paste (Command + V)
+                &kp COPY
+                &kp PASTE
             >;
         };
     };

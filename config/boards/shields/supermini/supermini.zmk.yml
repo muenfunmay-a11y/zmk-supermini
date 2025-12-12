@@ -1,5 +1,5 @@
 file_format: "1"
 id: supermini
-name: "SuperMini NRF52840 2-Key"
+name: "SuperMini 2-Key"
 type: shield
-requires: [ nice_nano_v2 ]
+

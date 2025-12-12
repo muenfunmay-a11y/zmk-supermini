@@ -1,0 +1,12 @@
+/ {
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            bindings = <
+                &kp LC(C)   // Copy (Command + C)
+                &kp LC(V)   // Paste (Command + V)
+            >;
+        };
+    };
+};

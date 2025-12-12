@@ -5,16 +5,15 @@
 
     kscan0: kscan {
         compatible = "zmk,kscan-gpio";
+
         rows = <1>;
         cols = <2>;
 
-        /* ใช้ row แยก (P0.15) เพื่อไม่ให้ชนกับ column */
-        row-gpios = <&gpio0 15 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+        row-gpios = <&gpio0 15 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)>;
 
-        /* columns: ปุ่ม Copy / Paste */
         col-gpios = <
-            &gpio0 2  GPIO_ACTIVE_LOW   /* P0.02 -> COPY */
-            &gpio0 29 GPIO_ACTIVE_LOW   /* P0.29 -> PASTE */
+            &gpio0 2  (GPIO_PULL_UP | GPIO_ACTIVE_LOW)
+            &gpio0 29 (GPIO_PULL_UP | GPIO_ACTIVE_LOW)
         >;
     };
 };

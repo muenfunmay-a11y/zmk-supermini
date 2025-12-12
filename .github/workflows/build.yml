@@ -8,7 +8,34 @@ on:
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
-    with:
-      board: nice_nano_v2
-      shield: supermini
+    runs-on: ubuntu-latest
+
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
+
+    steps:
+      - name: Checkout User Config
+        uses: actions/checkout@v4
+
+      - name: Init West
+        run: west init -l config
+
+      - name: Update West
+        run: west update
+
+      - name: Zephyr Export
+        run: west zephyr-export
+
+      - name: Build Firmware
+        run: >
+          west build -s zmk/app -b nice_nano_v2
+          -- -DSHIELD=supermini -DZMK_CONFIG=$GITHUB_WORKSPACE/config
+
+      - name: Rename firmware
+        run: cp build/zephyr/zmk.uf2 supermini_nice_nano_v2.uf2
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: supermini_nice_nano_v2.uf2

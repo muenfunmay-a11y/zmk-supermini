@@ -1,6 +1,6 @@
 / {
-    #define COPY  LC(C)   /* Command + C */
-    #define PASTE LC(V)   /* Command + V */
+    #define COPY  LC(C)
+    #define PASTE LC(V)
 
     keymap {
         compatible = "zmk,keymap";

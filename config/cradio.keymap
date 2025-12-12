@@ -9,8 +9,8 @@
         default_layer {
             // display-name = "SuperMini"; // (ไม่บังคับ)
             bindings = <
-                &kp LG(C)  // ตำแหน่ง 0,0: ปุ่ม 1 (P0.02) -> Command + C (Copy)
-                &kp LG(V)  // ตำแหน่ง 1,0: ปุ่ม 2 (P0.29) -> Command + V (Paste)
+                &kp Q
+                &kp W
             >;
         };
         

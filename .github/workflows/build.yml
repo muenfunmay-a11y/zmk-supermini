@@ -39,21 +39,21 @@ jobs:
       - name: West Zephyr export
         run: west zephyr-export
 
-      - name: West Build (KEYBOARD_TITLE)
-        run: west build -s zmk/app -b BOARD_NAME -- -DSHIELD=SHIELD_NAME -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+      - name: Build firmware
+        run: west build -s zmk/app -b nice_nano_v2 -- -DSHIELD=supermini_2key -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
 
-      - name: KEYBOARD_TITLE DTS File
+      - name: DTS File
         if: ${{ always() }}
-        run: cat -n build/zephyr/BOARD_NAME.dts.pre.tmp
+        run: cat -n build/zephyr/nice_nano_v2.dts.pre.tmp
 
-      - name: KEYBOARD_TITLE Kconfig file
+      - name: Kconfig File
         run: cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
 
-      - name: Rename zmk.uf2
-        run: cp build/zephyr/zmk.uf2 SHIELD_NAME_BOARD_NAME.uf2
+      - name: Rename firmware
+        run: cp build/zephyr/zmk.uf2 supermini_2key_nice_nano_v2.uf2
 
-      - name: Archive (KEYBOARD_TITLE)
+      - name: Upload firmware
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: SHIELD_NAME_BOARD_NAME.uf2
+          path: supermini_2key_nice_nano_v2.uf2

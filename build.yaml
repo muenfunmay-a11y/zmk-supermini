@@ -20,6 +20,4 @@
 ---
 include:
   - board: nice_nano@2.0.0
-    shield: cradio_left
-  - board: nice_nano@2.0.0
-    shield: cradio_right
+    shield: supermini

@@ -1,2 +1,0 @@
-config SHIELD_SUPERMINI
-    def_bool $(shields_list_contains,supermini)

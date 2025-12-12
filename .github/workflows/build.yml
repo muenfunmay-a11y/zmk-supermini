@@ -1,11 +1,80 @@
-name: Build ZMK Firmware
+# .github/workflows/build.yml
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+on: [push, pull_request, workflow_dispatch]
+
+name: Build ZMK Firmware
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
+    runs-on: ubuntu-latest
+    container:
+      # ใช้เวอร์ชันล่าสุดที่เสถียรสำหรับ ZMK build
+      image: zmkfirmware/zmk-build-arm:3.5 # ปรับปรุงเวอร์ชัน
+    name: Build SuperMini
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4 # อัปเดตเป็น uses: actions/checkout@v4
+
+      # ตั้งค่าตัวแปรสำหรับบอร์ดและ shield ที่ใช้ในการ build นี้
+      - name: Define Build Variables
+        id: vars
+        run: |
+          echo "BOARD_NAME=nice_nano_v2" >> $GITHUB_OUTPUT
+          echo "SHIELD_NAME=supermini" >> $GITHUB_OUTPUT
+          echo "KEYBOARD_TITLE=SuperMini nice!nano v2" >> $GITHUB_OUTPUT
+
+      # ใช้ Cache เพื่อเร่งความเร็วในการ build
+      - name: Cache Zephyr Modules
+        uses: actions/cache@v4 # อัปเดตเป็น uses: actions/cache@v4
+        env:
+          cache-name: cache-zephyr-modules
+        with:
+          path: |
+            modules/
+            tools/
+            zephyr/
+            bootloader/
+            zmk/
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('manifest-dir/west.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+            
+      - name: West Init
+        run: west init -l config
+        
+      - name: West Update
+        run: west update
+        
+      - name: West Zephyr Export
+        run: west zephyr-export
+        
+      # Build เฟิร์มแวร์
+      - name: Build ${{ steps.vars.outputs.KEYBOARD_TITLE }}
+        run: |
+          west build -s zmk/app \
+            -b ${{ steps.vars.outputs.BOARD_NAME }} \
+            -- -DSHIELD=${{ steps.vars.outputs.SHIELD_NAME }} \
+            -DZMK_CONFIG="${GITHUB_WORKSPACE}/config"
+            
+      # แสดงผล DTS File สำหรับการดีบัก (ไม่บังคับ แต่มีประโยชน์)
+      - name: ${{ steps.vars.outputs.KEYBOARD_TITLE }} DTS File (Debug)
+        if: ${{ always() }}
+        run: cat -n build/zephyr/${{ steps.vars.outputs.BOARD_NAME }}.dts.pre.tmp
+        
+      # แสดงผล Kconfig สำหรับการดีบัก
+      - name: ${{ steps.vars.outputs.KEYBOARD_TITLE }} Kconfig File (Debug)
+        run: cat build/zephyr/.config | grep -v "^#" | grep -v "^$"
+        
+      # เปลี่ยนชื่อไฟล์ .uf2 ให้สื่อความหมายก่อนจัดเก็บ
+      - name: Rename zmk.uf2
+        run: cp build/zephyr/zmk.uf2 ${{ steps.vars.outputs.SHIELD_NAME }}_${{ steps.vars.outputs.BOARD_NAME }}.uf2
+        
+      # จัดเก็บไฟล์เฟิร์มแวร์เป็น Artifact
+      - name: Archive ${{ steps.vars.outputs.KEYBOARD_TITLE }} Firmware
+        uses: actions/upload-artifact@v4 # อัปเดตเป็น uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.vars.outputs.SHIELD_NAME }}_${{ steps.vars.outputs.BOARD_NAME }}_firmware
+          path: ${{ steps.vars.outputs.SHIELD_NAME }}_${{ steps.vars.outputs.BOARD_NAME }}.uf2
+          retention-days: 7

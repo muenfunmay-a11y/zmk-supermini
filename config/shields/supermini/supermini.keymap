@@ -4,8 +4,8 @@
 
         default_layer {
             bindings = <
-                &kp LC(C)     // Copy
-                &kp LC(V)     // Paste
+                &kp LC(C)
+                &kp LC(V)
             >;
         };
     };
